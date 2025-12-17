@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HUB SODRAMAR</title>
+
+  <style>
+    :root{
+      --txt:#ffffff;
+      --muted:#d5ecff;
+
+      --green:#3aa868;
+
+      --line:rgba(255,255,255,.16);
+      --line2:rgba(255,255,255,.10);
+
+      /* “vidro” mais escuro p/ dar legibilidade em cima da foto */
+      --glass:rgba(6,21,41,.82);
+      --glass2:rgba(6,21,41,.70);
+      --glass3:rgba(6,21,41,.58);
+
+      --shadow:0 14px 35px rgba(0,0,0,.55);
+      --shadow2:0 10px 22px rgba(0,0,0,.40);
+
+      --textShadow: 0 2px 10px rgba(0,0,0,.65);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0;font-family:Segoe UI, Arial, sans-serif;}
+    body{
+      min-height:100vh;
+      background:#061529;
+      color:var(--txt);
+      padding:18px;
+      overflow-x:hidden;
+    }
+
+    /* BACKGROUND SLIDESHOW */
+    .bgWrap{position:fixed;inset:0;z-index:-3;}
+    .bgLayer{
+      position:absolute;inset:0;
+      background-size:cover;
+      background-position:center;
+      transform:scale(1.05);
+      opacity:0;
+      transition:opacity 1200ms ease;
+      filter: blur(1.2px) brightness(.80) saturate(1.05) contrast(1.05);
+    }
+    .bgLayer.on{opacity:1;}
+
+    /* overlay forte p/ contraste */
+    .bgOverlay{
+      position:absolute;inset:0;z-index:-2;
+      background:
+        radial-gradient(1100px 600px at 15% 15%, rgba(58,168,104,.18), transparent 58%),
+        radial-gradient(1100px 600px at 88% 18%, rgba(168,208,255,.14), transparent 58%),
+        linear-gradient(180deg, rgba(2,10,20,.82) 0%, rgba(2,10,20,.88) 50%, rgba(2,10,20,.92) 100%);
+    }
+
+    body::before{
+      content:"";
+      position:fixed;inset:0;
+      background:rgba(0,0,0,.15);
+      z-index:-1;
+      pointer-events:none;
+    }
+
+    .wrap{max-width:1120px;margin:0 auto;}
+
+    .top{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      border-radius:22px;
+      padding:16px 18px;
+      box-shadow:var(--shadow);
+      display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+      backdrop-filter: blur(14px);
+    }
+
+    .brand{display:flex;align-items:center;gap:14px;min-width:260px;}
+    .logo{
+      width:170px;max-width:46vw;height:auto;
+      filter:drop-shadow(0 10px 18px rgba(0,0,0,.45));
+      border-radius:10px;
+    }
+
+    .titleBox h1{
+      font-size:20px;
+      letter-spacing:.9px;
+      font-weight:950;
+      text-shadow:var(--textShadow);
+    }
+    .titleBox p{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+      text-shadow:var(--textShadow);
+    }
+
+    .rightBox{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+    .pill{
+      padding:8px 12px;border-radius:999px;
+      border:1px solid rgba(58,168,104,.45);
+      background:rgba(58,168,104,.16);
+      font-size:12px;color:#e3ffef;
+      white-space:nowrap;
+      text-shadow:var(--textShadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .panel{
+      margin-top:14px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      border-radius:22px;
+      padding:16px;
+      box-shadow:var(--shadow2);
+      backdrop-filter: blur(14px);
+    }
+
+    .tools{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    }
+
+    .tools .leftInfo{
+      display:flex;flex-direction:column;gap:6px;
+    }
+    .tools .leftInfo b{
+      letter-spacing:.4px;
+      font-size:15px;
+      text-shadow:var(--textShadow);
+    }
+    .tools .leftInfo span{
+      color:var(--muted);
+      font-size:13px;
+      text-shadow:var(--textShadow);
+    }
+
+    .searchBox{display:flex;gap:10px;align-items:center;min-width:min(460px,100%);}
+
+    /* INPUTS - alinhamento geral */
+    .input{
+      flex:1;min-width:220px;
+      height:46px;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid var(--line2);
+      background:rgba(0,0,0,.30);
+      color:#fff;outline:none;font-size:14px;
+      backdrop-filter: blur(10px);
+    }
+    .input::placeholder{color:rgba(213,236,255,.68);}
+    .input:focus{border-color:rgba(168,208,255,.45); background:rgba(0,0,0,.35);}
+
+    .btn{
+      border:0;cursor:pointer;background:var(--green);color:#fff;
+      padding:11px 16px;border-radius:14px;
+      font-weight:950;letter-spacing:.3px;
+      box-shadow:0 14px 26px rgba(58,168,104,.22);
+      transition:transform .08s ease, filter .15s ease;
+      white-space:nowrap;
+      text-shadow:0 2px 10px rgba(0,0,0,.35);
+    }
+    .btn:hover{filter:brightness(1.05);}
+    .btn:active{transform:scale(.98);}
+    .btn.secondary{
+      background:rgba(0,0,0,.30);
+      border:1px solid var(--line2);
+      box-shadow:none;
+      text-shadow:var(--textShadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .grid{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:14px;
+    }
+    @media (max-width:860px){ .grid{grid-template-columns:1fr;} }
+
+    .card{
+      border:1px solid rgba(255,255,255,.18);
+      background:linear-gradient(180deg, rgba(0,0,0,.34), rgba(0,0,0,.22));
+      border-radius:22px;
+      padding:14px;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      box-shadow:0 12px 22px rgba(0,0,0,.34);
+      transition:transform .10s ease, background .15s ease;
+      backdrop-filter: blur(12px);
+    }
+    .card:hover{
+      transform:translateY(-1px);
+      background:linear-gradient(180deg, rgba(0,0,0,.40), rgba(0,0,0,.26));
+    }
+
+    .left{display:flex;align-items:center;gap:12px;min-width:0;}
+    .icon{
+      width:54px;height:54px;border-radius:18px;
+      display:flex;align-items:center;justify-content:center;
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:0 10px 18px rgba(0,0,0,.28);
+      flex:0 0 auto;
+      background:rgba(255,255,255,.08);
+      backdrop-filter: blur(10px);
+    }
+
+    .meta{min-width:0;}
+    .name{
+      font-weight:950;
+      font-size:16px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      text-shadow:var(--textShadow);
+    }
+    .sub{
+      margin-top:6px;
+      font-size:13px;
+      color:var(--muted);
+      display:flex;gap:8px;flex-wrap:wrap;
+      text-shadow:var(--textShadow);
+    }
+    .tag{
+      font-size:12px;
+      padding:5px 9px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.22);
+      color:#eef7ff;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Modal */
+    .overlay{
+      position:fixed;inset:0;
+      background:rgba(0,0,0,.70);
+      display:none;align-items:center;justify-content:center;
+      padding:18px;
+      z-index:50;
+    }
+    .modal{
+      width:min(760px, 100%);
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:22px;
+      padding:18px;
+      background:linear-gradient(180deg, rgba(10,24,43,.98), rgba(6,18,34,.98));
+      box-shadow:0 22px 55px rgba(0,0,0,.68);
+      backdrop-filter: blur(12px);
+    }
+    .modalTop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    .modal h3{font-size:18px;letter-spacing:.4px;text-shadow:var(--textShadow);}
+    .modal p{margin-top:6px;color:var(--muted);font-size:13px;line-height:1.35;text-shadow:var(--textShadow);}
+
+    .actions{margin-top:14px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
+
+    .err{
+      margin-top:12px;display:none;
+      border:1px solid rgba(214,69,69,.35);
+      background:rgba(214,69,69,.18);
+      color:#ffe1e1;
+      padding:10px;border-radius:14px;font-size:13px;
+    }
+
+    /* Senha: botão Mostrar/Ocultar alinhado e bonito */
+    .rowPass{
+      position:relative;
+      flex:1;
+      min-width:220px;
+    }
+    #pass{
+      padding-right:118px !important; /* espaço pro botão */
+    }
+    .showPass{
+      position:absolute;
+      right:10px;
+      top:50%;
+      transform:translateY(-50%);
+
+      height:32px;
+      padding:0 12px;
+      border-radius:12px;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.2px;
+
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.22);
+      color:#fff;
+
+      cursor:pointer;
+      user-select:none;
+      backdrop-filter: blur(10px);
+
+      transition:filter .15s ease, transform .08s ease;
+    }
+    .showPass:hover{ filter:brightness(1.08); }
+    .showPass:active{ transform:translateY(-50%) scale(.98); }
+
+    .loading{opacity:.75;pointer-events:none;}
+
+    @media (max-width:520px){
+      .titleBox h1{font-size:18px;}
+      .titleBox p{font-size:12px;}
+      .logo{width:150px;}
+      .name{font-size:15px;}
+      .btn{padding:11px 14px;}
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Background -->
+  <div class="bgWrap" aria-hidden="true">
+    <div class="bgLayer on" id="bgA"></div>
+    <div class="bgLayer" id="bgB"></div>
+    <div class="bgOverlay"></div>
+  </div>
+
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <!-- coloque o arquivo "sodramar-logo.png" na mesma pasta -->
+        <img class="logo" src="sodramar-logo.png" alt="Sodramar" />
+        <div class="titleBox">
+          <h1>HUB SODRAMAR — MÓDULOS</h1>
+          <p>
+            Clique em <b>Abrir</b> e faça login para acessar o módulo.<br/>
+            Dica: no pop-up, <b>Enter</b> envia.
+          </p>
+        </div>
+      </div>
+
+      <div class="rightBox">
+        <div class="pill" id="pill">Carregando…</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="tools">
+        <div class="leftInfo">
+          <b>MÓDULOS</b>
+          <span>Acesso protegido por usuário e senha.</span>
+        </div>
+
+        <div class="searchBox">
+          <input class="input" id="search" placeholder="Pesquisar módulo…" autocomplete="off" />
+          <button class="btn secondary" id="refresh" type="button">Atualizar</button>
+        </div>
+      </div>
+
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <div class="modalTop">
+        <div>
+          <h3 id="modTitle">Acessar módulo</h3>
+          <p>Digite usuário e senha para liberar o acesso.</p>
+        </div>
+        <button class="btn secondary" id="close" type="button" title="Fechar (Esc)">Fechar</button>
+      </div>
+
+      <div class="tools" style="margin-top:14px;">
+        <input class="input" id="user" placeholder="Usuário" autocomplete="off">
+        <div class="rowPass">
+          <input class="input" id="pass" type="password" placeholder="Senha" autocomplete="off">
+          <button type="button" class="showPass" id="togglePass">Mostrar</button>
+        </div>
+      </div>
+
+      <div class="err" id="err"></div>
+
+      <div class="actions">
+        <button class="btn" id="go" type="button">Acessar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // SUA API (Apps Script /exec)
+    const API_URL = "https://script.google.com/macros/s/AKfycbxZAmxyWK20Xf07Y9Wy-PkUlU6mTe6RkMQVUrgIRBslj04ahc7jnStzOmG67B4aHRvW/exec";
+
+    // 5 imagens (links diretos do site Sodramar)
+    const POOL_IMAGES = [
+      "https://sodramar.com.br/wp-content/uploads/2021/03/fgbepiscina_paulinia5.jpg",
+      "https://sodramar.com.br/wp-content/uploads/2021/06/banner-sodramar-piscina.jpg",
+      "https://sodramar.com.br/wp-content/uploads/2020/11/galeria03.jpg",
+      "https://sodramar.com.br/wp-content/uploads/2020/11/galeria04.jpg",
+      "https://sodramar.com.br/wp-content/uploads/2020/11/galeria02.jpg"
+    ];
+
+    // Slideshow
+    const bgA = document.getElementById('bgA');
+    const bgB = document.getElementById('bgB');
+    let bgOnA = true;
+    let bgIndex = 0;
+
+    function setBg(el, url){ el.style.backgroundImage = `url("${url}")`; }
+
+    (function preload(){
+      POOL_IMAGES.forEach(src => {
+        const i = new Image();
+        i.referrerPolicy = "no-referrer";
+        i.src = src;
+      });
+      setBg(bgA, POOL_IMAGES[0]);
+    })();
+
+    function nextBg(){
+      bgIndex = (bgIndex + 1) % POOL_IMAGES.length;
+      const nextUrl = POOL_IMAGES[bgIndex];
+
+      const show = bgOnA ? bgB : bgA;
+      const hide = bgOnA ? bgA : bgB;
+
+      setBg(show, nextUrl);
+      show.classList.add('on');
+      hide.classList.remove('on');
+      bgOnA = !bgOnA;
+    }
+    setInterval(nextBg, 20000);
+
+    // HUB
+    const pill = document.getElementById('pill');
+    const grid = document.getElementById('grid');
+    const search = document.getElementById('search');
+    const refresh = document.getElementById('refresh');
+
+    const overlay = document.getElementById('overlay');
+    const modTitle = document.getElementById('modTitle');
+    const userInp = document.getElementById('user');
+    const passInp = document.getElementById('pass');
+    const errBox = document.getElementById('err');
+    const closeBtn = document.getElementById('close');
+    const goBtn = document.getElementById('go');
+    const togglePass = document.getElementById('togglePass');
+
+    let apps = [];
+    let filtered = [];
+    let currentApp = null;
+
+    function setErr(msg){
+      errBox.textContent = msg || '';
+      errBox.style.display = msg ? 'block' : 'none';
+    }
+
+    async function api(action, payload = {}){
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action, ...payload }),
+        cache: 'no-store'
+      });
+      return await res.json();
+    }
+
+    function colorById(id){
+      const map = {
+        injecao:  ['rgba(56,189,248,.30)','rgba(59,130,246,.22)'],
+        weld:     ['rgba(168,85,247,.30)','rgba(99,102,241,.22)'],
+        solda:    ['rgba(251,146,60,.30)','rgba(244,63,94,.18)'],
+        cadastro: ['rgba(148,163,184,.28)','rgba(45,212,191,.18)']
+      };
+      return map[id] || ['rgba(168,208,255,.22)','rgba(255,255,255,.10)'];
+    }
+
+    function iconSvg(id){
+      if(id === 'injecao') return `
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M4 20V6a2 2 0 0 1 2-2h12v16" stroke="white" stroke-width="2" opacity=".95"/>
+          <path d="M8 20v-6h8v6" stroke="white" stroke-width="2" opacity=".95"/>
+          <path d="M9 8h2M13 8h2M9 11h2M13 11h2" stroke="white" stroke-width="2" opacity=".95"/>
+        </svg>`;
+      if(id === 'weld') return `
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M4 19V5" stroke="white" stroke-width="2" opacity=".95"/>
+          <path d="M9 19V10" stroke="white" stroke-width="2" opacity=".95"/>
+          <path d="M14 19V7" stroke="white" stroke-width="2" opacity=".95"/>
+          <path d="M19 19V12" stroke="white" stroke-width="2" opacity=".95"/>
+        </svg>`;
+      if(id === 'solda') return `
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M12 22s6-4.2 6-10a6 6 0 0 0-12 0c0 5.8 6 10 6 10Z" stroke="white" stroke-width="2" opacity=".95"/>
+          <path d="M12 10c1.3 1.2 1.3 2.8 0 4" stroke="white" stroke-width="2" opacity=".95"/>
+        </svg>`;
+      return `
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M7 3h8l2 2v16H7V3Z" stroke="white" stroke-width="2" opacity=".95"/>
+          <path d="M9 9h6M9 13h6M9 17h6" stroke="white" stroke-width="2" opacity=".95"/>
+        </svg>`;
+    }
+
+    function render(list){
+      grid.innerHTML = '';
+      list.forEach(a => {
+        const [c1,c2] = colorById(a.app_id);
+
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        const left = document.createElement('div');
+        left.className = 'left';
+
+        const icon = document.createElement('div');
+        icon.className = 'icon';
+        icon.style.background = `linear-gradient(180deg, ${c1}, ${c2})`;
+        icon.innerHTML = iconSvg(a.app_id);
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+
+        const name = document.createElement('div');
+        name.className = 'name';
+        name.textContent = a.name;
+
+        const sub = document.createElement('div');
+        sub.className = 'sub';
+        sub.innerHTML = `<span class="tag">Acesso protegido</span>`;
+
+        meta.appendChild(name);
+        meta.appendChild(sub);
+
+        left.appendChild(icon);
+        left.appendChild(meta);
+
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.textContent = 'Abrir';
+        btn.type = 'button';
+        btn.addEventListener('click', () => openModal(a));
+
+        card.appendChild(left);
+        card.appendChild(btn);
+        grid.appendChild(card);
+      });
+
+      pill.textContent = `${list.length} módulos`;
+    }
+
+    function openModal(app){
+      currentApp = app;
+      modTitle.textContent = `Acessar: ${app.name}`;
+      userInp.value = '';
+      passInp.value = '';
+      setErr('');
+      overlay.style.display = 'flex';
+      setTimeout(() => userInp.focus(), 50);
+    }
+
+    function closeModal(){
+      overlay.style.display = 'none';
+      currentApp = null;
+    }
+
+    async function doLogin(){
+      setErr('');
+      if(!currentApp) return;
+
+      const u = userInp.value.trim();
+      const p = passInp.value.trim();
+      if(!u || !p) return setErr('Preencha usuário e senha.');
+
+      try{
+        overlay.classList.add('loading');
+        const r = await api('appLogin', { app_id: currentApp.app_id, username: u, password: p });
+        overlay.classList.remove('loading');
+
+        if(r.ok && r.url){
+          window.location.href = r.url;
+        } else {
+          setErr(r.msg || 'Acesso negado.');
+        }
+      }catch(err){
+        overlay.classList.remove('loading');
+        setErr('Falha ao chamar a API.');
+        console.error(err);
+      }
+    }
+
+    // Eventos
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', (e)=>{ if(e.target === overlay) closeModal(); });
+    goBtn.addEventListener('click', doLogin);
+
+    // Enter envia (usuário e senha)
+    userInp.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') doLogin(); });
+    passInp.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') doLogin(); });
+
+    // ESC fecha
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && overlay.style.display === 'flex') closeModal(); });
+
+    // Mostrar/ocultar senha
+    togglePass.addEventListener('click', ()=>{
+      const isPwd = passInp.type === 'password';
+      passInp.type = isPwd ? 'text' : 'password';
+      togglePass.textContent = isPwd ? 'Ocultar' : 'Mostrar';
+      passInp.focus();
+    });
+
+    // Busca
+    search.addEventListener('input', ()=>{
+      const q = (search.value || '').trim().toLowerCase();
+      filtered = apps.filter(a => a.name.toLowerCase().includes(q) || a.app_id.toLowerCase().includes(q));
+      render(filtered);
+    });
+
+    // Atualizar
+    refresh.addEventListener('click', async ()=>{ await loadApps(); });
+
+    async function loadApps(){
+      try{
+        pill.textContent = 'Carregando…';
+        const r = await api('listApps');
+        apps = (r && r.ok && Array.isArray(r.apps)) ? r.apps : [];
+        filtered = apps.slice();
+        render(filtered);
+      }catch(err){
+        pill.textContent = 'Erro';
+        console.error(err);
+      }
+    }
+
+    // Init
+    loadApps();
+  </script>
+</body>
+</html>
